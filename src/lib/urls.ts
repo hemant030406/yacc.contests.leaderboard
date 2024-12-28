@@ -1,0 +1,1 @@
+export const FOLDER_URL = '/home/hemant/Documents/'

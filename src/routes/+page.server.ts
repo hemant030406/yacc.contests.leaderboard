@@ -1,56 +1,45 @@
 import fs from 'fs';
 import path from 'path';
+import { FOLDER_URL } from '$lib/urls';
 import type { RequestEvent } from '@sveltejs/kit';
+import * as XLSX from 'xlsx';
 
 export async function load() {
-    const staticPath = path.resolve('static');
+    const localFolderPath = path.resolve(FOLDER_URL);
+    const staticFolderPath = path.resolve('static');
+
     try {
-        // Read the contents of the static folder
-        const files = fs.readdirSync(staticPath);
-        return {files};
+        const subfolders = fs.readdirSync(localFolderPath).filter(subfolder =>
+            fs.statSync(path.join(localFolderPath, subfolder)).isDirectory()
+        );
+
+        // Object to store files from each subfolder
+        let files: any = [];
+
+        for (const subfolder of subfolders) {
+            if (subfolder != 'Roadmap Contests' && subfolder != 'Training Contests') continue;
+            const subfolderPath = path.join(localFolderPath, subfolder);
+            const contests = fs.readdirSync(subfolderPath).filter(file =>
+                fs.statSync(path.join(subfolderPath, file)).isFile()
+            );
+
+            for (const contestFile of contests) {
+                const filePath = path.join(subfolderPath, contestFile);
+                const newFileName = path.basename(filePath); 
+                const newFilePath = path.join(staticFolderPath, newFileName);
+
+                fs.copyFileSync(filePath, newFilePath);
+            }
+
+            files = [...files, ...contests]; 
+        }
+        console.log(files);
+        return { files };
     } catch (error) {
         return {
             status: 500,
-            error: new Error('Could not read directory')
+            error: new Error(`Could not read directories: ${error.message}`)
         };
     }
 }
-
-export const actions = {
-    default: async ({ request }: RequestEvent) => {
-        const formData = await request.formData();
-        const file = formData.get('file');
-
-        if (!file || !(file instanceof File)) {
-            return { status: 400, body: { error: 'Invalid file upload' } };
-        }
-
-        try {
-            // Convert the file to a buffer
-            const buffer = Buffer.from(await file.arrayBuffer());
-            // Define the save path in the static folder
-            const staticDir = path.join(process.cwd(), 'static');
-            const savePath = path.join(staticDir, file.name);
-
-            // Ensure the static folder exists
-            await fs.promises.mkdir(staticDir, { recursive: true });
-
-            // Save the file to the static folder
-            await fs.promises.writeFile(savePath, buffer);
-
-            return { 
-                status: 200, 
-                body: { 
-                    message: `File uploaded successfully to static/${file.name}`,
-                } 
-            };
-        } catch (err) {
-            console.error('Error saving file:', err);
-            return { 
-                status: 500, 
-                body: { error: 'Failed to save file' } 
-            };
-        }
-    }
-};
 

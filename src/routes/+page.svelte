@@ -22,7 +22,7 @@
     });
 </script>
 
-<div class="flex flex-col items-center justify-center h-screen gap-5">
+<div class="flex flex-col items-center h-screen gap-5">
     <div class="main inline-block text-left mt-5" on:click|self={closeDropdown}>
         <!-- Dropdown Button -->
         <button
@@ -66,27 +66,6 @@
             </div>
         {/if}
     </div>
-
-    <form
-        method="POST"
-        enctype="multipart/form-data"
-        class="fileUpload flex flex-col items-center justify-center gap-3"
-    >
-        <div class="flex justify-center items-center">
-            <input
-                type="file"
-                id="file"
-                name="file"
-                accept=".xlsx"
-                class="border rounded p-2"
-            />
-        </div>
-        <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-            Upload
-        </button>
-    </form>
 </div>
 
 <style>

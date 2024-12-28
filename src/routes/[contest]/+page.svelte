@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from '$app/state';
+    import { FOLDER_URL } from '$lib/urls';
     import { onMount } from 'svelte';
     import * as XLSX from 'xlsx';
 
@@ -32,7 +33,8 @@
     };
 
     onMount(() => {
-        fileName = '/Rank-' + decodeURIComponent(page.url.pathname.slice(1)) + '.xlsx';
+        fileName = 'Rank-' + decodeURIComponent(page.url.pathname.slice(1)) + '.xlsx';
+        console.log(fileName);
         fetchAndParseExcel();
     });
 </script>
