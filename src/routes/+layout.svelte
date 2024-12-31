@@ -1,5 +1,6 @@
 <script lang="ts">
-    import "../app.css";
+    import Header from "$lib/components/Header.svelte";
+import "../app.css";
     import { onMount } from "svelte";
 
     let isOpen = false;
@@ -22,6 +23,8 @@
         }
     });
 </script>
+
+<Header />
 
 <div class="flex flex-col items-center gap-5">
     <div class="main inline-block text-left mt-5" on:click|self={closeDropdown}>
